@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EchoCare — Listening. Guiding. Connecting to care.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101E1A;
+    --bg-soft:#16261F;
+    --surface:#1C2E27;
+    --surface-raised:#243A31;
+    --line: rgba(237,234,225,0.09);
+    --cream:#F7F2E8;
+    --cream-dim:#E7E0D0;
+    --ink:#20302A;
+    --text:#EDEAE1;
+    --text-muted:#A2B6A7;
+    --text-faint:#71887B;
+    --sage:#8FBBA0;
+    --sage-deep:#5C9077;
+    --sage-bright:#B3DCC3;
+    --clay:#E8A184;
+    --clay-deep:#C96C4E;
+    --radius-lg:28px;
+    --radius-md:18px;
+    --radius-sm:12px;
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    background: var(--bg); color:var(--text); line-height:1.5;
+  }
+  h1,h2,h3,h4{ font-family:'Fraunces',serif; font-weight:600; color:var(--cream); margin:0; }
+  p{ margin:0; }
+  a{ color:inherit; }
+  ::selection{ background:var(--sage-deep); color:#fff; }
+  img,svg{ display:block; }
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 24px; }
+  .btn{
+    font-family:'Inter'; font-weight:600; font-size:14.5px; border-radius:100px;
+    padding:13px 24px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+    transition: transform .12s ease, filter .15s ease; text-decoration:none;
+  }
+  .btn:active{ transform:scale(.97); }
+  .btn-primary{ background:var(--sage); color:#0F1D17; }
+  .btn-primary:hover{ filter:brightness(1.08); }
+  .btn-outline{ background:transparent; border:1px solid rgba(237,234,225,0.25); color:var(--cream-dim); }
+  .btn-outline:hover{ border-color: var(--sage); }
+  .btn-clay{ background:var(--clay); color:#301A10; }
+  .btn-block{ width:100%; justify-content:center; }
+  .btn-sm{ padding:9px 16px; font-size:12.5px; }
+
+  /* ---------- rings signature ---------- */
+  .rings circle{ fill:none; stroke:var(--sage); }
+  .rings .r1{ stroke-width:2.4; }
+  .rings .r2{ stroke-width:1.3; opacity:.55; }
+  .rings .r3{ stroke-width:1; opacity:.28; }
+  .pulse .r2{ animation:pulseOut 2.8s ease-out infinite; }
+  .pulse .r3{ animation:pulseOut 2.8s ease-out infinite .55s; }
+  @keyframes pulseOut{ 0%{ transform-origin:center; transform:scale(.6); opacity:.7;} 100%{ transform-origin:center; transform:scale(1.6); opacity:0;} }
+
+  /* ---------- header ---------- */
+  .site-header{
+    position:sticky; top:0; z-index:40; backdrop-filter: blur(10px);
+    background: rgba(16,30,26,0.82); border-bottom:1px solid var(--line);
+  }
+  .site-header .wrap{ display:flex; align-items:center; justify-content:space-between; height:72px; }
+  .brand{ display:flex; align-items:center; gap:9px; background:none; border:none; cursor:pointer; }
+  .brand svg{ width:26px; height:26px; }
+  .brand span{ font-family:'Fraunces'; font-weight:600; font-size:19px; color:var(--cream); }
+  nav.navlinks{ display:flex; align-items:center; gap:4px; }
+  .navlink{
+    background:none; border:none; color:var(--text-muted); font-family:'Inter'; font-weight:500;
+    font-size:14px; padding:9px 14px; border-radius:100px; cursor:pointer; transition: color .15s, background .15s;
+  }
+  .navlink:hover{ color:var(--cream-dim); }
+  .navlink.active{ color:var(--sage-bright); background:rgba(143,187,160,0.1); }
+  .header-actions{ display:flex; align-items:center; gap:10px; }
+  .hamburger{ display:none; background:none; border:none; color:var(--cream); cursor:pointer; padding:6px; }
+  .hamburger svg{ width:22px; height:22px; }
+  .mobile-menu{ display:none; flex-direction:column; padding:8px 24px 16px; gap:2px; border-top:1px solid var(--line); }
+  .mobile-menu .navlink{ text-align:left; width:100%; }
+  .mobile-menu.open{ display:flex; }
+
+  @media (max-width:860px){
+    nav.navlinks, .header-actions .btn{ display:none; }
+    .hamburger{ display:inline-flex; }
+  }
+
+  /* ---------- page shell ---------- */
+  .page{ display:none; }
+  .page.active{ display:block; }
+  .page-hero{ padding: 20px 0 6px; }
+  .page-hero .eyebrow{ font-size:11.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--sage); font-weight:700; }
+  .page-hero h1{ font-size:clamp(26px,4vw,36px); margin-top:10px; line-height:1.15; max-width:640px; }
+  .page-hero p.sub{ color:var(--text-muted); font-size:15px; margin-top:12px; max-width:560px; line-height:1.6; }
+
+  /* ---------- HOME / hero ---------- */
+  .hero{ padding: 64px 0 40px; position:relative; overflow:hidden; }
+  .hero::before{
+    content:''; position:absolute; top:-180px; right:-160px; width:520px; height:520px; border-radius:50%;
+    background: radial-gradient(circle, rgba(143,187,160,0.16), transparent 68%); pointer-events:none;
+  }
+  .hero-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap:48px; align-items:center; position:relative; }
+  @media (max-width:900px){ .hero-grid{ grid-template-columns:1fr; } }
+  .hero-eyebrow{ font-size:12px; letter-spacing:.09em; text-transform:uppercase; color:var(--sage); font-weight:700; display:flex; align-items:center; gap:8px; }
+  .hero-eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--sage); }
+  .hero h1{ font-size:clamp(34px,5vw,54px); margin-top:16px; line-height:1.08; letter-spacing:-.01em; }
+  .hero h1 em{ font-style:normal; color:var(--sage-bright); }
+  .hero .motto{ font-size:16px; color:var(--cream-dim); font-weight:500; margin-top:16px; letter-spacing:.02em; }
+  .hero p.desc{ color:var(--text-muted); font-size:15.5px; margin-top:16px; max-width:480px; line-height:1.65; }
+  .hero-ctas{ display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
+
+  .hero-card{
+    background: linear-gradient(165deg, var(--surface-raised), var(--surface));
+    border:1px solid var(--line); border-radius: 30px; padding:22px;
+    box-shadow: 0 30px 60px rgba(6,12,10,0.35); max-width:340px; margin:0 auto;
+  }
+  .hero-card-head{ display:flex; align-items:center; gap:10px; padding-bottom:14px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+  .hero-card-head .n{ font-family:'Fraunces'; font-size:14.5px; font-weight:600; color:var(--cream); }
+  .hero-card-head .s{ font-size:10.5px; color:var(--sage-bright); }
+  .hero-chat-line{ background:var(--cream); color:var(--ink); border-radius:16px; border-bottom-left-radius:5px; padding:11px 14px; font-size:13px; min-height:20px; max-width:88%; }
+  .hero-chat-line.typing-cursor::after{ content:'▍'; opacity:.6; animation:blink 1s step-end infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .stat-row{ display:flex; gap:28px; margin-top:40px; flex-wrap:wrap; }
+  .stat{ display:flex; flex-direction:column; }
+  .stat .num{ font-family:'Fraunces'; font-size:26px; color:var(--cream); }
+  .stat .lbl{ font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
+
+  /* section shared */
+  .section{ padding: 56px 0; border-top:1px solid var(--line); }
+  .section-head{ max-width:560px; margin-bottom:34px; }
+  .section-head .eyebrow{ font-size:11.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--sage); font-weight:700; }
+  .section-head h2{ font-size:clamp(22px,3vw,30px); margin-top:10px; }
+  .section-head p{ color:var(--text-muted); font-size:14.5px; margin-top:10px; line-height:1.6; }
+
+  .feature-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width:820px){ .feature-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .feature-grid{ grid-template-columns:1fr; } }
+  .feature-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md);
+    padding:24px 20px; text-align:left; cursor:pointer; color:var(--text); display:flex; flex-direction:column; gap:12px;
+    transition: border-color .15s, transform .15s;
+  }
+  .feature-card:hover{ border-color: rgba(143,187,160,0.4); transform: translateY(-2px); }
+  .feature-card .icon-wrap{ width:42px; height:42px; border-radius:12px; background:rgba(143,187,160,0.12); display:flex; align-items:center; justify-content:center; }
+  .feature-card .icon-wrap svg{ width:22px; height:22px; stroke:var(--sage-bright); fill:none; stroke-width:1.6; }
+  .feature-card .title{ font-family:'Fraunces'; font-weight:600; font-size:16.5px; color:var(--cream); }
+  .feature-card .desc{ font-size:13px; color:var(--text-muted); line-height:1.55; }
+  .feature-card .go{ font-size:12px; color:var(--sage-bright); font-weight:600; margin-top:auto; }
+  .feature-card .badge{ align-self:flex-start; font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; font-weight:700; padding:2px 8px; border-radius:100px; background:rgba(226,161,132,0.16); color:var(--clay); }
+
+  .trust-band{
+    background: linear-gradient(155deg, var(--surface-raised), var(--surface));
+    border:1px solid var(--line); border-radius:var(--radius-lg); padding:34px;
+    display:grid; grid-template-columns: 1fr 1fr 1fr; gap:24px;
+  }
+  @media (max-width:760px){ .trust-band{ grid-template-columns:1fr; } }
+  .trust-item{ display:flex; gap:12px; }
+  .trust-item svg{ width:20px; height:20px; stroke:var(--sage-bright); fill:none; stroke-width:1.6; flex-shrink:0; margin-top:2px; }
+  .trust-item .t{ font-weight:600; font-size:14px; color:var(--cream-dim); }
+  .trust-item .d{ font-size:12.5px; color:var(--text-muted); margin-top:4px; line-height:1.55; }
+
+  /* ---------- footer ---------- */
+  .site-footer{ border-top:1px solid var(--line); padding: 34px 0 40px; }
+  .site-footer .wrap{ display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; align-items:flex-start; }
+  .site-footer .fbrand{ display:flex; align-items:center; gap:8px; }
+  .site-footer .fbrand span{ font-family:'Fraunces'; font-weight:600; color:var(--cream-dim); font-size:14px; }
+  .site-footer p{ font-size:11.5px; color:var(--text-faint); line-height:1.6; max-width:460px; margin-top:10px; }
+  .site-footer .flinks{ font-size:12px; color:var(--text-muted); display:flex; gap:16px; flex-wrap:wrap; }
+  .site-footer .flinks a{ text-decoration:none; }
+  .site-footer .flinks a:hover{ color:var(--sage-bright); }
+
+  /* ---------- CHAT PAGE ---------- */
+  .chat-shell{
+    max-width:720px; margin:0 auto; background:var(--surface); border:1px solid var(--line);
+    border-radius: var(--radius-lg); overflow:hidden; display:flex; flex-direction:column;
+    height: 620px; max-height:74vh;
+  }
+  .chat-shell-header{ padding:16px 20px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--line); background:var(--surface-raised); }
+  .chat-shell-header .meta .name{ font-family:'Fraunces'; font-size:16px; font-weight:600; color:var(--cream); }
+  .chat-shell-header .meta .status{ font-size:11px; color:var(--sage-bright); }
+  .crisis-link{ margin-left:auto; font-size:11.5px; font-weight:600; color:var(--clay); border:1px solid rgba(232,161,132,0.4); background:rgba(232,161,132,0.08); padding:6px 12px; border-radius:100px; cursor:pointer; white-space:nowrap; }
+
+  .chat-scroll{ flex:1; min-height:0; overflow-y:auto; padding:18px 20px; display:flex; flex-direction:column; gap:10px; }
+  .chat-scroll::-webkit-scrollbar{ width:5px; }
+  .chat-scroll::-webkit-scrollbar-thumb{ background: rgba(237,234,225,0.14); border-radius:10px; }
+  .msg{ max-width:80%; padding:11px 15px; border-radius:18px; font-size:13.8px; line-height:1.55; animation:rise .25s ease; }
+  @keyframes rise{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  .msg.echo{ align-self:flex-start; background:var(--cream); color:var(--ink); border-bottom-left-radius:6px; }
+  .msg.user{ align-self:flex-end; background:var(--sage-deep); color:#EAF6EE; border-bottom-right-radius:6px; }
+  .msg ul{ margin:6px 0 0; padding-left:18px; }
+  .msg li{ margin-bottom:3px; }
+  .msg .tel{ font-weight:700; }
+  .typing{ align-self:flex-start; display:flex; gap:4px; padding:12px 14px; background:var(--cream); border-radius:18px; border-bottom-left-radius:6px; }
+  .typing span{ width:6px; height:6px; border-radius:50%; background:#9C9382; animation:bounce 1.2s infinite; }
+  .typing span:nth-child(2){ animation-delay:.15s; } .typing span:nth-child(3){ animation-delay:.3s; }
+  @keyframes bounce{ 0%,60%,100%{transform:translateY(0); opacity:.5;} 30%{transform:translateY(-4px); opacity:1;} }
+
+  .chip-row{ display:flex; gap:8px; padding:10px 16px; overflow-x:auto; flex-shrink:0; border-top:1px solid var(--line); }
+  .chip-row::-webkit-scrollbar{ display:none; }
+  .chip{ flex-shrink:0; background:var(--surface-raised); color:var(--text-muted); border:1px solid var(--line); border-radius:100px; padding:8px 13px; font-size:12px; cursor:pointer; white-space:nowrap; }
+  .chip:active{ transform:scale(.96); }
+  .chat-input-row{ display:flex; align-items:flex-end; gap:8px; padding:12px 16px 16px; }
+  .chat-input-row textarea{ flex:1; resize:none; max-height:90px; min-height:42px; background:var(--bg-soft); border:1px solid var(--line); border-radius:20px; color:var(--text); font-family:'Inter'; font-size:13.8px; padding:11px 16px; outline:none; line-height:1.4; }
+  .chat-input-row textarea:focus{ border-color:var(--sage-deep); }
+  .send-btn{ width:42px; height:42px; border-radius:50%; background:var(--sage); border:none; flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .send-btn svg{ width:17px; height:17px; stroke:#0F1D17; fill:none; stroke-width:2; }
+
+  /* ---------- RESOURCES PAGE ---------- */
+  .zip-form{ display:flex; gap:10px; margin:24px 0 6px; max-width:420px; }
+  .zip-form input{ flex:1; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:13px 15px; color:var(--text); font-family:'Inter'; font-size:14px; outline:none; }
+  .zip-form input:focus{ border-color:var(--sage-deep); }
+  .res-cat-title{ font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--sage-bright); font-weight:700; margin:32px 0 14px; display:flex; align-items:center; gap:8px; }
+  .res-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  @media (max-width:700px){ .res-grid{ grid-template-columns:1fr; } }
+  .res-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:16px 17px; }
+  .res-card .rname{ font-size:14px; font-weight:600; color:var(--cream-dim); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .res-card .rdesc{ font-size:12.5px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
+  .res-card .rtel{ font-size:12.5px; color:var(--sage-bright); margin-top:8px; font-weight:600; }
+  .tag{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; padding:2px 8px; border-radius:100px; font-weight:700; }
+  .tag-live{ background:rgba(143,187,160,0.18); color:var(--sage-bright); }
+  .tag-demo{ background:rgba(232,161,132,0.18); color:var(--clay); }
+  .demo-banner{ display:flex; gap:10px; background:rgba(232,161,132,0.08); border:1px solid rgba(232,161,132,0.3); border-radius:var(--radius-sm); padding:14px 16px; margin:18px 0; }
+  .demo-banner svg{ width:16px; height:16px; stroke:var(--clay); flex-shrink:0; margin-top:2px; }
+  .demo-banner p{ font-size:12px; color:var(--cream-dim); line-height:1.5; }
+
+  /* ---------- TIPS PAGE ---------- */
+  details.tip{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); margin-bottom:10px; overflow:hidden; }
+  details.tip summary{ list-style:none; cursor:pointer; padding:17px 18px; display:flex; align-items:center; gap:12px; font-size:14.5px; font-weight:600; color:var(--cream-dim); }
+  details.tip summary::-webkit-details-marker{ display:none; }
+  details.tip summary .plus{ margin-left:auto; color:var(--sage-bright); font-size:18px; transition:transform .2s; }
+  details.tip[open] summary .plus{ transform:rotate(45deg); }
+  details.tip .tip-body{ padding:0 18px 18px 47px; font-size:13.2px; color:var(--text-muted); line-height:1.65; }
+  details.tip .tip-body ul{ margin:6px 0 0; padding-left:16px; }
+  details.tip .tip-body li{ margin-bottom:5px; }
+  .tip-emoji{ width:24px; text-align:center; flex-shrink:0; font-size:16px; }
+  .tips-list{ max-width:720px; }
+
+  /* ---------- SAFE-USE PAGE ---------- */
+  .sim-badge{ display:inline-flex; align-items:center; gap:6px; background:rgba(232,161,132,0.14); border:1px solid rgba(232,161,132,0.4); color:var(--clay); font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:5px 12px; border-radius:100px; margin-top:14px; }
+  .sim-badge .dot{ width:6px; height:6px; border-radius:50%; background:var(--clay); }
+  .safeuse-grid{ display:grid; grid-template-columns: 340px 1fr; gap:28px; align-items:flex-start; margin-top:28px; }
+  @media (max-width:800px){ .safeuse-grid{ grid-template-columns:1fr; } }
+  .vital-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:30px; text-align:center; position:relative; }
+  .vital-rings{ width:100px; height:100px; margin:0 auto 16px; }
+  .bpm-value{ font-family:'Fraunces'; font-size:44px; color:var(--cream); font-weight:600; }
+  .bpm-label{ font-size:11px; color:var(--text-faint); letter-spacing:.06em; text-transform:uppercase; margin-top:2px; }
+  .session-time{ font-size:12.5px; color:var(--text-muted); margin-top:16px; }
+  .vital-actions{ display:flex; flex-direction:column; gap:10px; margin-top:22px; }
+  .about-list{ display:flex; flex-direction:column; gap:14px; }
+  .about-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:18px 20px; }
+  .about-card .t{ font-weight:600; font-size:14px; color:var(--cream-dim); margin-bottom:6px; }
+  .about-card p{ font-size:12.8px; color:var(--text-muted); line-height:1.65; }
+
+  .modal-overlay{ position:fixed; inset:0; background:rgba(8,14,12,0.86); backdrop-filter:blur(2px); display:none; align-items:center; justify-content:center; z-index:100; padding:24px; }
+  .modal-overlay.show{ display:flex; }
+  .modal-card{ background:var(--surface-raised); border:1px solid rgba(232,161,132,0.4); border-radius:var(--radius-lg); padding:30px 26px; text-align:center; width:100%; max-width:360px; }
+  .modal-card .modal-count{ font-family:'Fraunces'; font-size:46px; color:var(--clay); }
+  .modal-card h3{ font-size:17px; color:var(--cream); margin-top:8px; }
+  .modal-card p{ font-size:12.5px; color:var(--text-muted); margin-top:8px; line-height:1.55; }
+  .modal-card .modal-fineprint{ font-size:10.5px; color:var(--text-faint); margin-top:14px; }
+  .modal-card .btn{ margin-top:16px; }
+
+  /* ---------- ABOUT PAGE ---------- */
+  .about-page-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:40px; margin-top:32px; }
+  @media (max-width:820px){ .about-page-grid{ grid-template-columns:1fr; } }
+  .about-body p{ font-size:14.5px; color:var(--text-muted); line-height:1.75; margin-bottom:16px; }
+  .about-body h3{ font-size:15px; color:var(--cream-dim); margin:22px 0 8px; }
+  .equity-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:20px 22px; margin-bottom:14px; }
+  .equity-card .t{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--sage-bright); font-weight:700; margin-bottom:8px; }
+  .equity-card p{ font-size:13px; color:var(--text-muted); line-height:1.6; }
+
+  .disclaimer-strip{ background:rgba(143,187,160,0.08); border:1px dashed rgba(143,187,160,0.3); border-radius:var(--radius-sm); padding:16px 18px; margin-top:24px; }
+  .disclaimer-strip p{ font-size:12.5px; color:var(--text-muted); line-height:1.6; }
+
+  .section-title-page{ font-size:clamp(24px,3.4vw,32px); margin-top:8px; }
+
+  @media (max-width:600px){
+    .wrap{ padding:0 18px; }
+    .hero{ padding:40px 0 24px; }
+    .section{ padding:40px 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <button class="brand" onclick="showPage('home')">
+      <svg class="rings pulse" viewBox="0 0 40 40"><circle class="r1" cx="20" cy="20" r="6"/><circle class="r2" cx="20" cy="20" r="12"/><circle class="r3" cx="20" cy="20" r="18"/></svg>
+      <span>EchoCare</span>
+    </button>
+    <nav class="navlinks" id="navlinks">
+      <button class="navlink active" data-page="home" onclick="showPage('home')">Home</button>
+      <button class="navlink" data-page="chat" onclick="showPage('chat')">Chat</button>
+      <button class="navlink" data-page="resources" onclick="showPage('resources')">Resources</button>
+      <button class="navlink" data-page="tips" onclick="showPage('tips')">Tips</button>
+      <button class="navlink" data-page="safeuse" onclick="showPage('safeuse')">Safe-Use</button>
+      <button class="navlink" data-page="about" onclick="showPage('about')">About</button>
+    </nav>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" onclick="showPage('chat')">Chat with Echo</button>
+    </div>
+    <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="navlink active" data-page="home" onclick="showPage('home')">Home</button>
+    <button class="navlink" data-page="chat" onclick="showPage('chat')">Chat with Echo</button>
+    <button class="navlink" data-page="resources" onclick="showPage('resources')">Resources</button>
+    <button class="navlink" data-page="tips" onclick="showPage('tips')">Harm Reduction Tips</button>
+    <button class="navlink" data-page="safeuse" onclick="showPage('safeuse')">Safe-Use Mode</button>
+    <button class="navlink" data-page="about" onclick="showPage('about')">About</button>
+  </div>
+</header>
+
+<!-- ================= HOME ================= -->
+<main class="page active" id="page-home">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="hero-eyebrow"><span class="dot"></span>AI-powered harm reduction support</div>
+        <h1>You don't have to<br>figure this out <em>alone</em>.</h1>
+        <p class="motto">Listening. Guiding. Connecting to care.</p>
+        <p class="desc">EchoCare is a compassionate digital companion for people who use drugs — offering judgment-free support, evidence-based harm reduction guidance, and real connections to life-saving resources, day or night.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary" onclick="showPage('chat')">Chat with Echo</button>
+          <button class="btn btn-outline" onclick="showPage('resources')">Find resources near you</button>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="num">Free</div><div class="lbl">Always, no account</div></div>
+          <div class="stat"><div class="num">Anon.</div><div class="lbl">No identifiers stored</div></div>
+          <div class="stat"><div class="num">24/7</div><div class="lbl">Available anytime</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="hero-card">
+          <div class="hero-card-head">
+            <svg class="rings" viewBox="0 0 40 40" style="width:30px;height:30px;"><circle class="r1" cx="20" cy="20" r="6"/><circle class="r2" cx="20" cy="20" r="12"/></svg>
+            <div><div class="n">Echo</div><div class="s">● private · not stored</div></div>
+          </div>
+          <div id="heroTyping" class="hero-chat-line typing-cursor" style="margin-bottom:10px;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="how-it-helps">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">How EchoCare helps</div>
+        <h2>Five ways to feel less alone</h2>
+        <p>Every feature is designed around one question: what does someone actually need in the moment they reach out?</p>
+      </div>
+      <div class="feature-grid">
+        <button class="feature-card" onclick="showPage('chat')">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="title">Chat with Echo</div>
+          <div class="desc">A CBT-informed, judgment-free companion for real-time conversation, emotional support, and coping strategies — anytime you need someone.</div>
+          <div class="go">Open chat →</div>
+        </button>
+        <button class="feature-card" onclick="showPage('tips')">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.5.4.8 1 .8 1.6v.5h5.4v-.5c0-.6.3-1.2.8-1.6A6 6 0 0 0 12 3z"/></svg></div>
+          <div class="title">Harm Reduction Tips</div>
+          <div class="desc">Evidence-based, expert-reviewed guidance on safer use, overdose response, and infectious disease prevention.</div>
+          <div class="go">Browse tips →</div>
+        </button>
+        <button class="feature-card" onclick="showPage('resources')">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
+          <div class="title">Resource Finder</div>
+          <div class="desc">Search by ZIP code to find syringe service programs, naloxone sites, MOUD providers, shelters, and peer navigation nearby.</div>
+          <div class="go">Search by ZIP →</div>
+        </button>
+        <button class="feature-card" onclick="showPage('chat'); setTimeout(() => sendQuick('I want to talk to a real person'), 200);">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="title">Human Connection</div>
+          <div class="desc">When you want more than a chatbot, Echo hands you off to peer navigators, counselors, and live support lines.</div>
+          <div class="go">Talk to a person →</div>
+        </button>
+        <button class="feature-card" onclick="showPage('chat'); setTimeout(() => sendQuick('Someone might be overdosing right now'), 200);">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div>
+          <div class="title">Crisis Support</div>
+          <div class="desc">Echo recognizes language around overdose risk or suicidal ideation and immediately surfaces the right emergency resources.</div>
+          <div class="go">Learn more →</div>
+        </button>
+        <button class="feature-card" onclick="showPage('safeuse')">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4.5 8-11.8V5l-8-3-8 3v5.2C4 17.5 12 22 12 22z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/></svg></div>
+          <div class="badge">Simulated demo</div>
+          <div class="title">Safe-Use Mode</div>
+          <div class="desc">Wearable vital-sign check-ins that could alert a designated contact if something looks like an overdose.</div>
+          <div class="go">See how it works →</div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="privacy">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Why trust matters here</div>
+        <h2>Privacy isn't a feature. It's the foundation.</h2>
+      </div>
+      <div class="trust-band">
+        <div class="trust-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5z"/></svg>
+          <div><div class="t">Anonymous by default</div><div class="d">No account, no identifiers stored. Nothing you type is saved or sent anywhere beyond this browser tab.</div></div>
+        </div>
+        <div class="trust-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+          <div><div class="t">Community-engaged design</div><div class="d">Grounded in collaboration with harm reduction workers, researchers, and people with lived experience — not built from the outside in.</div></div>
+        </div>
+        <div class="trust-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M12 3l8 4v5c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V7z"/></svg>
+          <div><div class="t">Never a replacement for people</div><div class="d">Echo always keeps a door open to real peer navigators, counselors, and crisis lines — AI supports, it doesn't substitute.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= CHAT ================= -->
+<main class="page" id="page-chat">
+  <div class="wrap">
+    <div class="page-hero">
+      <div class="eyebrow">Chat with Echo</div>
+      <h1>A conversation, not a form.</h1>
+      <p class="sub">Talk about what's going on, ask about staying safer, or find resources — nothing here is stored or judged.</p>
+    </div>
+    <div class="chat-shell" style="margin-top:26px;">
+      <div class="chat-shell-header">
+        <svg class="rings" viewBox="0 0 40 40" style="width:32px;height:32px;"><circle class="r1" cx="20" cy="20" r="6"/><circle class="r2" cx="20" cy="20" r="12"/></svg>
+        <div class="meta"><div class="name">Echo</div><div class="status">● private · not stored</div></div>
+        <button class="crisis-link" onclick="sendQuick('Someone might be overdosing right now')">Urgent help</button>
+      </div>
+      <div class="chat-scroll" id="chatScroll"></div>
+      <div class="chip-row" id="chipRow">
+        <div class="chip" onclick="sendQuick('I need to find resources near me')">Find resources</div>
+        <div class="chip" onclick="sendQuick('I&#39;m planning to use later and want to be safer')">Using later, want to be safer</div>
+        <div class="chip" onclick="sendQuick('I feel really ashamed about my use')">Feeling ashamed</div>
+        <div class="chip" onclick="sendQuick('I want to talk to a real person')">Talk to a person</div>
+      </div>
+      <div class="chat-input-row">
+        <textarea id="chatInput" placeholder="Type to Echo…" rows="1"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= RESOURCES ================= -->
+<main class="page" id="page-resources">
+  <div class="wrap" style="padding-bottom:60px;">
+    <div class="page-hero">
+      <div class="eyebrow">Resource Finder</div>
+      <h1>Find support near you</h1>
+      <p class="sub">Free, confidential, and usually no ID required. Search by ZIP code, or use the numbers below anywhere.</p>
+    </div>
+
+    <form class="zip-form" onsubmit="searchZip(event)">
+      <input id="zipInput" type="text" inputmode="numeric" maxlength="5" placeholder="Enter ZIP code">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+
+    <div class="res-cat-title">Available anywhere, right now</div>
+    <div class="res-grid">
+      <div class="res-card"><div class="rname">SAMHSA National Helpline <span class="tag tag-live">Real</span></div><div class="rdesc">Free, confidential, 24/7 treatment referral &amp; information service.</div><div class="rtel">1-800-662-4357 · findtreatment.gov</div></div>
+      <div class="res-card"><div class="rname">Never Use Alone <span class="tag tag-live">Real</span></div><div class="rdesc">Call before you use — someone stays on the line and calls for help if you stop responding.</div><div class="rtel">1-800-484-3731</div></div>
+      <div class="res-card"><div class="rname">988 Suicide &amp; Crisis Lifeline <span class="tag tag-live">Real</span></div><div class="rdesc">Free, confidential emotional support, 24/7.</div><div class="rtel">Call or text 988</div></div>
+      <div class="res-card"><div class="rname">NEXT Distro <span class="tag tag-live">Real</span></div><div class="rdesc">Mail-order naloxone and fentanyl test strips, no cost, most U.S. states.</div><div class="rtel">nextdistro.org</div></div>
+      <div class="res-card"><div class="rname">NASEN Directory <span class="tag tag-live">Real</span></div><div class="rdesc">National directory of syringe service programs by location.</div><div class="rtel">nasen.org</div></div>
+      <div class="res-card"><div class="rname">SAMHSA Peer Support <span class="tag tag-live">Real</span></div><div class="rdesc">Ask the National Helpline to connect you with peer recovery support in your state.</div><div class="rtel">1-800-662-4357</div></div>
+    </div>
+
+    <div id="zipResults"></div>
+  </div>
+</main>
+
+<!-- ================= TIPS ================= -->
+<main class="page" id="page-tips">
+  <div class="wrap" style="padding-bottom:60px;">
+    <div class="page-hero">
+      <div class="eyebrow">Harm Reduction Tips</div>
+      <h1>Practical, evidence-based, no judgment</h1>
+      <p class="sub">Information to help you make lower-risk choices — written the way a peer would explain it, not a pamphlet.</p>
+    </div>
+    <div class="tips-list" id="tipsList" style="margin-top:26px;"></div>
+  </div>
+</main>
+
+<!-- ================= SAFE-USE ================= -->
+<main class="page" id="page-safeuse">
+  <div class="wrap" style="padding-bottom:60px;">
+    <div class="page-hero">
+      <div class="eyebrow">Safe-Use Mode</div>
+      <h1>Real-time overdose detection &amp; emergency response</h1>
+      <div class="sim-badge"><span class="dot"></span> Simulated — no wearable connected</div>
+      <p class="sub" style="margin-top:16px;">When activated, this would connect to a wearable that tracks vital signs during use. If it detects signs like a dangerously low heart rate, EchoCare would alert EMS and a designated contact. Everything below is generated by this demo, not a real sensor.</p>
+    </div>
+
+    <div class="safeuse-grid">
+      <div class="vital-card">
+        <svg class="vital-rings rings" id="vitalRings" viewBox="0 0 40 40"><circle class="r1" cx="20" cy="20" r="6"/><circle class="r2" cx="20" cy="20" r="12"/><circle class="r3" cx="20" cy="20" r="18"/></svg>
+        <div class="bpm-value" id="bpmValue">—</div>
+        <div class="bpm-label">simulated heart rate (bpm)</div>
+        <div class="session-time" id="sessionTime">No session running</div>
+        <div class="vital-actions">
+          <button class="btn btn-primary btn-block" id="sessionBtn" onclick="toggleSession()">Start simulated session</button>
+          <button class="btn btn-outline btn-block" id="alertBtn" onclick="simulateAlert()" disabled>Simulate an overdose alert</button>
+        </div>
+      </div>
+
+      <div class="about-list">
+        <div class="about-card">
+          <div class="t">Sends an alert to EMS</div>
+          <p>A dangerous drop in heart rate or other overdose indicators would trigger an automatic call for emergency medical services.</p>
+        </div>
+        <div class="about-card">
+          <div class="t">Notifies a designated contact</div>
+          <p>A peer, friend, or support contact you choose in advance would be notified at the same time, so you're not waiting on EMS alone.</p>
+        </div>
+        <div class="about-card">
+          <div class="t">Why it's simulated here</div>
+          <p>This prototype isn't connected to real hardware, and this feature can't ethically go further without direct input from people who use drugs — for many, a device that contacts emergency services raises real fear of police involvement. That input has to come before the engineering.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="alertModal">
+      <div class="modal-card">
+        <div class="modal-count" id="modalCount">60</div>
+        <h3>Irregular vitals detected</h3>
+        <p>If you're okay, cancel below. Otherwise EchoCare would alert your emergency contact and share your last known location.</p>
+        <button class="btn btn-clay btn-block" onclick="cancelAlert()">I'm okay — cancel alert</button>
+        <div class="modal-fineprint">Simulated demo only. No real alert is sent and no location is used.</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= ABOUT ================= -->
+<main class="page" id="page-about">
+  <div class="wrap" style="padding-bottom:60px;">
+    <div class="page-hero">
+      <div class="eyebrow">About this project</div>
+      <h1>A concept, not yet a product</h1>
+      <p class="sub">EchoCare started as a one-week hackathon project for HBEH 690 at UNC Gillings School of Global Public Health — and this site is a working prototype built from that concept.</p>
+    </div>
+
+    <div class="about-page-grid">
+      <div class="about-body">
+        <p>Substance use disorders remain a critical public health issue in the United States. People who use drugs often face stigma, criminalization, and fragmented access to the services that keep them alive — naloxone, sterile syringes, and medication for opioid use disorder among them.</p>
+        <p>EchoCare proposes an AI-powered companion that offers judgment-free support, evidence-based harm reduction guidance, and real connections to local resources — designed through collaboration with public health researchers, harm reduction experts, peer navigators, and people with lived experience.</p>
+        <h3>What this prototype is — and isn't</h3>
+        <p>This is a design concept grounded in research and domain expertise, not a product that has been user-tested. The people most affected by it — people who use drugs — have not yet had a voice in this design. Chat, resources, and tips are functionally working in this build; Safe-Use Mode is simulated, since no wearable hardware is connected.</p>
+        <h3>Built by</h3>
+        <p>Ben Westlund, MSPH/PhD Candidate in Health Behavior, UNC Gillings School of Global Public Health. <a href="mailto:benwestlund@med.unc.edu" style="color:var(--sage-bright);">benwestlund@med.unc.edu</a></p>
+      </div>
+
+      <div>
+        <div class="equity-card"><div class="t">Who benefits</div><p>People who use drugs, particularly in rural, underserved, or stigmatized communities with limited access to harm reduction and treatment services.</p></div>
+        <div class="equity-card"><div class="t">Who may be excluded</div><p>People without a smartphone, internet access, or digital literacy. Future versions could include an SMS-based option or shared-access devices through community partners.</p></div>
+        <div class="equity-card"><div class="t">Ethical safeguards</div><p>EchoCare is always transparent that the chatbot isn't human, and keeps direct pathways to peer navigators, counselors, and hotlines for anyone in distress or crisis.</p></div>
+      </div>
+    </div>
+
+    <div class="disclaimer-strip">
+      <p>This is a working prototype for a graduate UX case study — not a live medical product. If you or someone you're with is in immediate danger, call 911. For the full case study and design reflection, visit <a href="https://benwestlund.github.io/EchoCare/" target="_blank" style="color:var(--sage-bright);">benwestlund.github.io/EchoCare</a>.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <div class="fbrand">
+        <svg class="rings" viewBox="0 0 40 40" style="width:20px;height:20px;"><circle class="r1" cx="20" cy="20" r="6"/><circle class="r2" cx="20" cy="20" r="12"/></svg>
+        <span>EchoCare</span>
+      </div>
+      <p>A UX case study &amp; working prototype by Ben Westlund, UNC Gillings HBEH 690. Nothing typed into this site is stored or sent anywhere.</p>
+    </div>
+    <div class="flinks">
+      <a href="#" onclick="showPage('about'); return false;">About</a>
+      <a href="https://benwestlund.github.io/EchoCare/" target="_blank">Case study</a>
+      <a href="mailto:benwestlund@med.unc.edu">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---------------- navigation ---------------- */
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.navlink').forEach(t => t.classList.toggle('active', t.dataset.page === name));
+  document.getElementById('mobileMenu').classList.remove('open');
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+}
+function toggleMobileMenu(){
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+/* ---------------- hero typewriter ---------------- */
+const heroLines = [
+  "You don't have to figure this out alone.",
+  "Where are you feeling stuck right now?",
+  "I can help you find naloxone nearby.",
+  "No judgment here — just tell me what's going on."
+];
+let heroLineIdx = 0, heroCharIdx = 0, heroTyping = true;
+const heroEl = document.getElementById('heroTyping');
+function typeHero(){
+  const line = heroLines[heroLineIdx];
+  if(heroTyping){
+    heroCharIdx++;
+    heroEl.textContent = line.slice(0, heroCharIdx);
+    if(heroCharIdx >= line.length){ heroTyping = false; setTimeout(typeHero, 1600); return; }
+  } else {
+    heroCharIdx--;
+    heroEl.textContent = line.slice(0, heroCharIdx);
+    if(heroCharIdx <= 0){ heroTyping = true; heroLineIdx = (heroLineIdx + 1) % heroLines.length; setTimeout(typeHero, 400); return; }
+  }
+  setTimeout(typeHero, heroTyping ? 38 : 20);
+}
+typeHero();
+
+/* ---------------- chat ---------------- */
+const chatScroll = document.getElementById('chatScroll');
+const chatInput = document.getElementById('chatInput');
+
+function appendMsg(role, html){
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.innerHTML = html;
+  chatScroll.appendChild(div);
+  chatScroll.scrollTop = chatScroll.scrollHeight;
+  return div;
+}
+function showTyping(){
+  const div = document.createElement('div');
+  div.className = 'typing'; div.id = 'typingRow';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  chatScroll.appendChild(div);
+  chatScroll.scrollTop = chatScroll.scrollHeight;
+}
+function hideTyping(){ const t = document.getElementById('typingRow'); if(t) t.remove(); }
+
+let chatStarted = false;
+function ensureIntro(){
+  if(chatStarted) return;
+  chatStarted = true;
+  appendMsg('echo', "Hey. I'm Echo — I'm here for whatever's going on, no judgment and nothing you say leaves this chat. You can ask me about staying safer, finding resources nearby, or just talk. What's on your mind?");
+}
+function sendQuick(text){
+  showPage('chat');
+  chatInput.value = text;
+  sendMessage();
+}
+function sendMessage(){
+  const text = chatInput.value.trim();
+  if(!text) return;
+  ensureIntro();
+  appendMsg('user', escapeHtml(text));
+  chatInput.value = ''; chatInput.style.height = 'auto';
+  showTyping();
+  const delay = 600 + Math.random() * 500;
+  setTimeout(() => { hideTyping(); appendMsg('echo', generateReply(text.toLowerCase())); }, delay);
+}
+chatInput.addEventListener('keydown', e => { if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } });
+chatInput.addEventListener('input', function(){ this.style.height='auto'; this.style.height = Math.min(this.scrollHeight, 90) + 'px'; });
+chatInput.addEventListener('focus', ensureIntro);
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function generateReply(m){
+  if(/(overdos|not breathing|turning blue|unresponsive|won'?t wake|lips.*blue|gray.*skin)/.test(m)){
+    return "If someone isn't breathing normally or won't wake up, treat it as an overdose right now:" +
+      "<ul><li>Call <span class='tel'>911</span> — most states have Good Samaritan laws protecting people who call for an overdose.</li>" +
+      "<li>Give naloxone (Narcan) if you have it — spray in one nostril, can repeat every 2–3 minutes if there's no response.</li>" +
+      "<li>Do rescue breathing: tilt the head back, one breath every 5 seconds.</li>" +
+      "<li>Once they're breathing on their own, place them in the recovery position (on their side).</li></ul>" +
+      "Stay with them until help arrives. You're doing the right thing by acting.";
+  }
+  if(/(suicid|kill myself|end it all|want to die|can'?t (go on|do this)|no reason to live)/.test(m)){
+    return "I'm really glad you told me that. What you're carrying sounds heavy, and you don't have to carry it alone." +
+      "<br><br>Please reach out to the <span class='tel'>988</span> Suicide &amp; Crisis Lifeline — call or text 988, free and confidential, 24/7. They're trained for exactly this." +
+      "<br><br>I'm here too, if you want to keep talking about what's going on.";
+  }
+  if(/(talk to a (real )?person|human|peer navigator|counselor|someone who understands)/.test(m)){
+    return "Of course — a chatbot can only go so far. In a full version of EchoCare, this is where I'd hand you off to a live peer navigator or counselor. For now, here are real people you can reach right now:" +
+      "<ul><li>Never Use Alone: <span class='tel'>1-800-484-3731</span> — a real person stays on the line with you</li>" +
+      "<li>SAMHSA National Helpline: <span class='tel'>1-800-662-4357</span> — can connect you with peer recovery support in your state</li>" +
+      "<li>988 Suicide &amp; Crisis Lifeline: <span class='tel'>call or text 988</span></li></ul>";
+  }
+  if(/(ashamed|shame|judg|worthless|disgust|failure|hate myself|no one cares)/.test(m)){
+    return "Thank you for trusting me with that. What you're feeling makes sense — there's so much stigma around drug use, and carrying that weight alone is exhausting." +
+      "<br><br>Your use doesn't define your worth. Reaching out, the way you just did, takes real courage." +
+      "<br><br>Do you want to talk about what's been weighing on you, or would it help to look at resources instead?";
+  }
+  if(/(using (later|tonight)|about to use|plan(ning)? to use|want to be safer|safer use)/.test(m)){
+    return "It's a good sign that you're thinking about this ahead of time. A few things that lower risk:" +
+      "<ul><li>Don't use alone if you can help it — or call the Never Use Alone line: <span class='tel'>1-800-484-3731</span>, they'll stay on the phone with you.</li>" +
+      "<li>Use a fentanyl test strip if you have access to one — supply is unpredictable right now.</li>" +
+      "<li>Start with less than usual, especially if your tolerance has changed recently.</li>" +
+      "<li>Keep naloxone within reach, and make sure someone nearby knows how to use it.</li></ul>" +
+      "Want me to help you find naloxone or test strips near you?";
+  }
+  if(/(naloxone|narcan)/.test(m)){
+    return "Naloxone reverses an opioid overdose and is safe even if opioids aren't involved. You can usually get it:" +
+      "<ul><li>Free at most syringe service programs</li><li>At pharmacies without a prescription in most states</li>" +
+      "<li>Mailed to you at no cost through NEXT Distro (nextdistro.org)</li></ul>" +
+      "It's a nasal spray — one spray per nostril, and you can give another dose after 2–3 minutes if there's no response. Want help finding a location near you?";
+  }
+  if(/(wound|infect|abscess|swoll|redness)/.test(m)){
+    return "Some general care: keep the area clean and covered, rotate injection sites if that applies, and watch for redness, warmth, swelling, or pus spreading outward — those are signs of infection." +
+      "<br><br>If you're seeing those signs, it's worth getting seen by a provider or an urgent care soon — infections can get serious fast if left untreated. Some syringe service programs also offer wound care on-site.";
+  }
+  if(/(resource|treatment|syringe|needle exchange|find (help|a program)|moud|suboxone|methadone|shelter)/.test(m)){
+    return "I can point you toward support. Open the <strong>Resources</strong> page in the nav — it has national hotlines that work anywhere, plus a place to search by ZIP code. SAMHSA's line (<span class='tel'>1-800-662-4357</span>) is a good place to start for treatment options, including medication for opioid use disorder.";
+  }
+  if(/^(hi|hey|hello|yo|sup)\b/.test(m)){
+    return "Hey, good to hear from you. I can help you think through staying safer, find resources nearby, or just be someone to talk to. What's going on?";
+  }
+  return "I hear you. Tell me a bit more about what's going on — or if it's easier, you can tap one of the quick options above for resources, safer-use info, or support.";
+}
+
+/* ---------------- resources / zip search ---------------- */
+async function searchZip(e){
+  e.preventDefault();
+  const zip = document.getElementById('zipInput').value.trim();
+  const out = document.getElementById('zipResults');
+  const btn = e.target.querySelector('button');
+  if(!/^\d{5}$/.test(zip)){
+    out.innerHTML = '<div class="demo-banner"><p>Enter a 5-digit ZIP code to search.</p></div>';
+    return;
+  }
+  out.innerHTML = '<div class="res-cat-title">Searching…</div>';
+  btn.disabled = true;
+  let place = null;
+  try{
+    const res = await fetch('https://api.zippopotam.us/us/' + zip);
+    if(res.ok){
+      const data = await res.json();
+      const p = data.places && data.places[0];
+      if(p){ place = { city: p['place name'], state: p['state abbreviation'] }; }
+    }
+  } catch(err){}
+  btn.disabled = false;
+  if(!place){
+    out.innerHTML = '<div class="demo-banner"><p><strong>' + zip + '</strong> doesn\'t match a real U.S. ZIP code. Double-check it and try again.</p></div>';
+    return;
+  }
+  const sample = [
+    {name:'[Sample] Community Outreach — Syringe Services', desc:'Sterile syringe access, naloxone, and wound care. Walk-ins welcome.'},
+    {name:'[Sample] Riverside Health Access Point', desc:'Free naloxone distribution and fentanyl test strips.'},
+    {name:'[Sample] Bridge Recovery Clinic', desc:'Same-day buprenorphine (MOUD) induction, no insurance required.'},
+    {name:'[Sample] Harborview Overnight Shelter', desc:'Harm-reduction-friendly shelter beds, no sobriety requirement.'}
+  ];
+  out.innerHTML =
+    '<div class="res-cat-title">Near ' + place.city + ', ' + place.state + ' (' + zip + ')</div>' +
+    '<div class="demo-banner"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>' +
+    '<p>That ZIP resolved to a real location. <strong>The listings below are still sample data</strong> — a live version would query SAMHSA\'s FindTreatment.gov API or NASEN\'s syringe program directory using these coordinates.</p></div>' +
+    '<div class="res-grid">' + sample.map(r => '<div class="res-card"><div class="rname">' + r.name + ' <span class="tag tag-demo">Demo</span></div><div class="rdesc">' + r.desc + '</div></div>').join('') + '</div>';
+}
+
+/* ---------------- tips content ---------------- */
+const tips = [
+  { icon:'🚨', title:'Recognizing an overdose', body:"Watch for: slow or stopped breathing, blue or gray lips/fingertips, gurgling or choking sounds, being unresponsive to shouting or a sternum rub, and pinpoint pupils. If you're not sure, treat it as an overdose — acting fast matters more than being certain." },
+  { icon:'🧯', title:'Responding to an overdose', body:"<ul><li>Call 911. Good Samaritan laws in most states protect the caller and the person who overdosed from drug possession charges.</li><li>Give naloxone if available — repeat every 2–3 minutes if there's no response.</li><li>Do rescue breathing until help arrives or breathing resumes.</li><li>Once breathing returns, place them in the recovery position on their side.</li><li>Stay until EMS arrives, if it's safe to do so.</li></ul>" },
+  { icon:'💊', title:'Getting naloxone', body:"Available free at most syringe service programs, without a prescription at most pharmacies, and by mail at no cost through NEXT Distro. Carrying it doesn't mean you're planning to use — it means you're prepared to save a life, including your own." },
+  { icon:'🧪', title:'Testing your supply', body:"Fentanyl and xylazine test strips can tell you if a substance is present, though not the amount. A negative result lowers risk but doesn't guarantee safety. Test strips are legal to possess in most states and available through syringe service programs." },
+  { icon:'🩹', title:'Safer use basics', body:"<ul><li>Use new, sterile equipment every time — never share needles, cookers, or cottons.</li><li>Don't use alone when you can avoid it, or use a hotline that stays on the phone with you.</li><li>Go slower than usual after any break in use — tolerance drops fast.</li><li>Keep naloxone within reach and make sure someone nearby knows how to use it.</li></ul>" },
+  { icon:'🩺', title:'Wound &amp; infection care', body:"Keep injection sites clean, rotate sites, and watch for redness, warmth, swelling, or pus that spreads — those need medical attention soon, not eventually. Many syringe service programs offer free wound care without judgment." },
+  { icon:'🗣️', title:'Talking to a provider', body:"You don't have to disclose more than you're comfortable with. It's okay to ask a provider directly how they document substance use, and to seek out harm-reduction-informed or peer-staffed clinics where they exist." }
+];
+document.getElementById('tipsList').innerHTML = tips.map(t =>
+  '<details class="tip"><summary><span class="tip-emoji">' + t.icon + '</span>' + t.title + '<span class="plus">+</span></summary><div class="tip-body">' + t.body + '</div></details>'
+).join('');
+
+/* ---------------- safe-use mode (simulated) ---------------- */
+let sessionActive = false, sessionSeconds = 0, sessionTimer = null, bpmTimer = null, currentBpm = 0;
+const bpmEl = document.getElementById('bpmValue');
+const sessionBtn = document.getElementById('sessionBtn');
+const alertBtn = document.getElementById('alertBtn');
+const sessionTimeEl = document.getElementById('sessionTime');
+const vitalRings = document.getElementById('vitalRings');
+function fmtTime(s){ const m=Math.floor(s/60).toString().padStart(2,'0'); const sec=(s%60).toString().padStart(2,'0'); return m+':'+sec; }
+function toggleSession(){
+  sessionActive = !sessionActive;
+  if(sessionActive){
+    sessionBtn.textContent = 'End simulated session';
+    sessionBtn.classList.remove('btn-primary'); sessionBtn.classList.add('btn-outline');
+    alertBtn.disabled = false; vitalRings.classList.add('pulse');
+    currentBpm = 68; bpmEl.textContent = currentBpm;
+    bpmTimer = setInterval(() => { currentBpm += Math.round((Math.random()-0.5)*6); currentBpm = Math.max(58, Math.min(96, currentBpm)); bpmEl.textContent = currentBpm; }, 1400);
+    sessionSeconds = 0; sessionTimeEl.textContent = 'Session running · ' + fmtTime(sessionSeconds);
+    sessionTimer = setInterval(() => { sessionSeconds++; sessionTimeEl.textContent = 'Session running · ' + fmtTime(sessionSeconds); }, 1000);
+  } else { endSession(); }
+}
+function endSession(){
+  sessionActive = false; clearInterval(sessionTimer); clearInterval(bpmTimer);
+  sessionBtn.textContent = 'Start simulated session';
+  sessionBtn.classList.add('btn-primary'); sessionBtn.classList.remove('btn-outline');
+  alertBtn.disabled = true; vitalRings.classList.remove('pulse');
+  bpmEl.textContent = '—'; sessionTimeEl.textContent = 'No session running';
+}
+let alertCountdown = null, countdownVal = 60;
+function simulateAlert(){
+  if(!sessionActive) return;
+  countdownVal = 60; document.getElementById('modalCount').textContent = countdownVal;
+  document.getElementById('alertModal').classList.add('show');
+  alertCountdown = setInterval(() => {
+    countdownVal--; document.getElementById('modalCount').textContent = countdownVal;
+    if(countdownVal <= 0){ clearInterval(alertCountdown); resolveAlert(); }
+  }, 1000);
+}
+function cancelAlert(){ clearInterval(alertCountdown); document.getElementById('alertModal').classList.remove('show'); }
+function resolveAlert(){
+  document.getElementById('alertModal').classList.remove('show');
+  alert('Simulated demo: an alert would now be sent to a designated contact with your last known location. No real message was sent.');
+}
+</script>
+</body>
+</html>
